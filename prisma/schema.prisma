@@ -1,0 +1,251 @@
+// Prisma schema for the Danish invoicing SaaS prototype.
+// See prisma.config.ts for how the client is generated/connected.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Organization / User
+// ---------------------------------------------------------------------------
+
+/// The paying customer's business. Everything else in the app is scoped to
+/// an Organization — this is the multi-tenancy boundary.
+model Organization {
+  id   String @id @default(cuid())
+  name String
+
+  /// Danish CVR (Central Business Register) number of the issuing business.
+  /// Required on every invoice by Danish law — see LEGAL_MINIMUM_INVOICE_FIELDS.
+  cvrNumber String
+
+  addressLine1 String
+  addressLine2 String?
+  postalCode   String
+  city         String
+  country      String  @default("Denmark")
+  logoUrl      String?
+
+  /// Gapless, per-organization invoice number counter. Danish law requires
+  /// invoice numbers to be sequential with zero gaps, so this must never be
+  /// a shared/global auto-increment id. This field holds the NEXT number to
+  /// assign; see src/lib/invoice-number.ts for the transaction-safe
+  /// increment-and-assign logic (numbers are only consumed when an invoice
+  /// is issued, not when a draft is created).
+  nextInvoiceNumber Int @default(1)
+
+  users      User[]
+  clients    Client[]
+  templates  InvoiceTemplate[]
+  invoices   Invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organizations")
+}
+
+/// An application user belonging to exactly one Organization.
+model User {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  email        String @unique
+  name         String
+  passwordHash String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// ---------------------------------------------------------------------------
+// Client
+// ---------------------------------------------------------------------------
+
+/// The party being invoiced. May be a business (cvrNumber set) or a private
+/// person (cvrNumber null).
+model Client {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name  String
+  email String
+  cvrNumber String?
+
+  addressLine1 String
+  addressLine2 String?
+  postalCode   String
+  city         String
+  country      String @default("Denmark")
+
+  invoices Invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("clients")
+}
+
+// ---------------------------------------------------------------------------
+// InvoiceTemplate
+// ---------------------------------------------------------------------------
+
+/// A named, reusable invoice template (e.g. "Wedding package"). All
+/// customization lives in `fields` (JSONB) — this is intentionally flexible
+/// and not validated at the schema level, unlike Invoice's legally mandated
+/// structured fields.
+model InvoiceTemplate {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name String
+
+  /// Freeform, customer-defined template configuration (line item presets,
+  /// layout/branding choices, default notes, etc). Never used to generate
+  /// binding legal/licensing text — see NEVER_GENERATE_LEGAL_TEXT constant.
+  fields Json @default("{}")
+
+  invoices Invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("invoice_templates")
+}
+
+// ---------------------------------------------------------------------------
+// Invoice
+// ---------------------------------------------------------------------------
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
+
+/// A single invoice. Fields that are legally mandated in Denmark (invoice
+/// number, issue date, VAT rate/amount — see LEGAL_MINIMUM_INVOICE_FIELDS)
+/// are structured, typed columns, never JSONB, so they can be validated and
+/// queried reliably. Everything else customizable lives in `customFields`.
+model Invoice {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Restrict)
+
+  templateId String?
+  template   InvoiceTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  /// Sequential per-organization invoice number. Null while the invoice is
+  /// a DRAFT (drafts can be freely edited/deleted without creating a gap);
+  /// assigned exactly once, atomically, the moment the invoice is issued
+  /// (status DRAFT -> SENT). See src/lib/invoice-number.ts.
+  number Int?
+
+  issueDate DateTime
+  dueDate   DateTime
+
+  /// VAT rate applied to this invoice, e.g. 0.25 for the Danish standard
+  /// 25% rate. See DANISH_STANDARD_VAT_RATE.
+  vatRate      Decimal @db.Decimal(5, 4)
+  subtotalAmount Decimal @db.Decimal(12, 2) @default(0)
+  vatAmount      Decimal @db.Decimal(12, 2) @default(0)
+  totalAmount    Decimal @db.Decimal(12, 2) @default(0)
+  currency       String  @default("DKK")
+
+  status InvoiceStatus @default(DRAFT)
+
+  /// Flexible, per-invoice display/layout data (e.g. custom notes fields
+  /// defined by the template). Never legally mandated content.
+  customFields Json @default("{}")
+
+  lineItems LineItem[]
+  payments  Payment[]
+  reminders Reminder[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Guarantees no two invoices in the same org share a number. Postgres
+  /// treats NULLs as distinct for uniqueness, so multiple drafts (number =
+  /// null) are allowed.
+  @@unique([organizationId, number])
+  @@map("invoices")
+}
+
+// ---------------------------------------------------------------------------
+// LineItem
+// ---------------------------------------------------------------------------
+
+model LineItem {
+  id        String  @id @default(cuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  description String
+  quantity    Decimal @db.Decimal(12, 2)
+  unitPrice   Decimal @db.Decimal(12, 2)
+
+  /// Display order within the invoice.
+  position Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("line_items")
+}
+
+// ---------------------------------------------------------------------------
+// Payment
+// ---------------------------------------------------------------------------
+
+model Payment {
+  id        String  @id @default(cuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  amount  Decimal  @db.Decimal(12, 2)
+  paidAt  DateTime
+
+  createdAt DateTime @default(now())
+
+  @@map("payments")
+}
+
+// ---------------------------------------------------------------------------
+// Reminder (rykker)
+// ---------------------------------------------------------------------------
+
+model Reminder {
+  id        String  @id @default(cuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  /// 1st, 2nd, or 3rd reminder for this invoice. Capped at
+  /// RYKKER_MAX_REMINDERS_PER_INVOICE — enforced in application code.
+  reminderNumber Int
+
+  sentAt DateTime
+
+  /// Fee charged for this reminder. Capped at RYKKER_MAX_FEE_DKK per
+  /// reminder — enforced in application code.
+  feeAmount Decimal @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
+
+  @@unique([invoiceId, reminderNumber])
+  @@map("reminders")
+}
