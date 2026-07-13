@@ -1,12 +1,17 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { signIn } from "@/auth";
+import { EmailNotVerifiedError, signIn } from "@/auth";
+
+export type LoginState = {
+  message: string;
+  unverifiedEmail?: string;
+} | undefined;
 
 export async function loginAction(
-  _prevState: string | undefined,
+  _prevState: LoginState,
   formData: FormData,
-): Promise<string | undefined> {
+): Promise<LoginState> {
   const email = formData.get("email");
   const password = formData.get("password");
   const callbackUrl = formData.get("callbackUrl");
@@ -18,8 +23,14 @@ export async function loginAction(
       redirectTo: typeof callbackUrl === "string" && callbackUrl ? callbackUrl : "/dashboard",
     });
   } catch (error) {
+    if (error instanceof EmailNotVerifiedError) {
+      return {
+        message: "Bekræft din email, før du kan logge ind.",
+        unverifiedEmail: typeof email === "string" ? email : undefined,
+      };
+    }
     if (error instanceof AuthError) {
-      return "Invalid email or password.";
+      return { message: "Forkert email eller adgangskode." };
     }
     throw error;
   }

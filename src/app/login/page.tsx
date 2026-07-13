@@ -1,11 +1,12 @@
+import Link from "next/link";
 import LoginForm from "./login-form";
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; verified?: string }>;
 }) {
-  const { callbackUrl } = await searchParams;
+  const { callbackUrl, verified } = await searchParams;
 
   return (
     <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 dark:bg-black">
@@ -16,7 +17,18 @@ export default async function LoginPage({
         <p className="mt-1 text-sm text-zinc-500">
           Log ind for at tilgå dine fakturaer.
         </p>
+        {verified === "1" && (
+          <p className="mt-4 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950 dark:text-green-400">
+            Din email er bekræftet. Du kan nu logge ind.
+          </p>
+        )}
         <LoginForm callbackUrl={callbackUrl} />
+        <p className="mt-6 text-sm text-zinc-500">
+          Har du ikke en konto?{" "}
+          <Link href="/signup" className="font-medium text-zinc-900 dark:text-zinc-100">
+            Opret konto
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -63,6 +63,13 @@ export const MORARENTE_PERCENTAGE_POINTS_ABOVE_NATIONALBANKEN_RATE = 8;
 export const B2B_COMPENSATION_FEE_DKK = 310;
 
 // ---------------------------------------------------------------------------
+// Account signup
+// ---------------------------------------------------------------------------
+
+/** How long an emailed account-verification link stays valid before expiring. */
+export const EMAIL_VERIFICATION_TOKEN_TTL_HOURS = 24;
+
+// ---------------------------------------------------------------------------
 // Product guardrails
 // ---------------------------------------------------------------------------
 

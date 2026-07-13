@@ -4,7 +4,7 @@ import { authConfig } from "@/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/signup", "/verify-email"];
 
 export default auth((req) => {
   const isPublic = PUBLIC_PATHS.some((path) =>

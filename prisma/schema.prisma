@@ -60,10 +60,32 @@ model User {
   name         String
   passwordHash String
 
+  /// Null until the user clicks the link in their verification email.
+  /// Login is blocked while this is null — see EMAIL_VERIFICATION_TOKEN_TTL_HOURS.
+  emailVerified DateTime?
+
+  verificationTokens VerificationToken[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+/// A single-use, expiring token emailed to a user to confirm their address.
+/// Stores only a hash of the token (like a password), never the raw value —
+/// the raw token exists solely in the emailed link.
+model VerificationToken {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash String   @unique
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  @@map("verification_tokens")
 }
 
 // ---------------------------------------------------------------------------

@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { loginAction } from "./actions";
 
 export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
-  const [error, formAction, pending] = useActionState(loginAction, undefined);
+  const [state, formAction, pending] = useActionState(loginAction, undefined);
 
   return (
     <form action={formAction} className="mt-6 flex flex-col gap-4">
@@ -38,7 +39,22 @@ export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
         />
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {state && (
+        <p className="text-sm text-red-600">
+          {state.message}
+          {state.unverifiedEmail && (
+            <>
+              {" "}
+              <Link
+                href={`/signup/check-email?email=${encodeURIComponent(state.unverifiedEmail)}`}
+                className="underline"
+              >
+                Send bekræftelseslink igen
+              </Link>
+            </>
+          )}
+        </p>
+      )}
 
       <button
         type="submit"
