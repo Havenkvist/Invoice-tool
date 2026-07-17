@@ -9,7 +9,6 @@ if (process.env.NODE_ENV !== "production") {
   globalForResend.resend = resend;
 }
 
-/** Sender address used for all transactional email. */
 const FROM_ADDRESS = "Faktura <onboarding@resend.dev>";
 
 export async function sendEmail(params: {

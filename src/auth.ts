@@ -4,12 +4,11 @@ import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "@/auth.config";
 import { prisma } from "@/lib/prisma";
 
-/** Thrown by authorize() when credentials are correct but the email isn't verified yet. */
 export class EmailNotVerifiedError extends CredentialsSignin {
   code = "email_not_verified";
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({

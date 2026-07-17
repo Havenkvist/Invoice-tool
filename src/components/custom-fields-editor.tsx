@@ -21,11 +21,6 @@ function rowFromField(field: CustomField): FieldRow {
   };
 }
 
-/**
- * Repeatable label/value rows for Invoice.customFields and InvoiceTemplate.fields.
- * Submits as parallel "customFieldLabel"/"customFieldValue" form entries (same
- * pattern as the line-item rows) — read them back with customFieldsFromFormEntries.
- */
 export default function CustomFieldsEditor({ initialFields = [] }: { initialFields?: CustomField[] }) {
   const [rows, setRows] = useState<FieldRow[]>(() => initialFields.map(rowFromField));
 

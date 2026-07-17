@@ -1,11 +1,5 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
-/**
- * Data shape for rendering an invoice. Kept independent of Prisma's
- * Decimal/Date types (plain numbers/strings) so this component can be reused
- * for both PDF export (this file) and an on-screen preview, without either
- * consumer needing to know about Prisma.
- */
 export type InvoicePdfData = {
   number: number | null;
   issueDate: string;

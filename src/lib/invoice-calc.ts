@@ -1,4 +1,3 @@
-/** Computes subtotal/VAT/total for a set of line items and a VAT rate. */
 export function calculateInvoiceTotals(
   lineItems: { quantity: number; unitPrice: number }[],
   vatRate: number,

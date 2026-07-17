@@ -5,10 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { getRequestOrigin } from "@/lib/url";
 import { createVerificationToken } from "@/lib/verification-token";
 
-/**
- * Always returns the same neutral message regardless of whether the email
- * exists or is already verified, so this can't be used to enumerate accounts.
- */
 const NEUTRAL_MESSAGE =
   "Hvis kontoen findes og ikke allerede er bekræftet, har vi sendt en ny email.";
 
