@@ -1,6 +1,8 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import { InvoicePdfDocument, type InvoicePdfData } from "@/components/invoice-pdf";
+import { toIntlLocale } from "@/i18n/config";
+import { getLocale } from "@/i18n/server";
 import { parseCustomFields } from "@/lib/custom-fields";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
@@ -11,6 +13,8 @@ export async function GET(
 ) {
   const { id } = await params;
   const session = await requireSession();
+  const locale = await getLocale();
+  const intl = toIntlLocale(locale);
 
   const invoice = await prisma.invoice.findFirst({
     where: { id, organizationId: session.user.organizationId },
@@ -27,8 +31,8 @@ export async function GET(
 
   const data: InvoicePdfData = {
     number: invoice.number,
-    issueDate: invoice.issueDate.toLocaleDateString("da-DK"),
-    dueDate: invoice.dueDate.toLocaleDateString("da-DK"),
+    issueDate: invoice.issueDate.toLocaleDateString(intl),
+    dueDate: invoice.dueDate.toLocaleDateString(intl),
     vatRate: Number(invoice.vatRate),
     subtotalAmount: Number(invoice.subtotalAmount),
     vatAmount: Number(invoice.vatAmount),
@@ -60,7 +64,9 @@ export async function GET(
     })),
   };
 
-  const buffer = await renderToBuffer(<InvoicePdfDocument invoice={data} />);
+  const buffer = await renderToBuffer(
+    <InvoicePdfDocument invoice={data} locale={locale} />,
+  );
 
   return new NextResponse(new Uint8Array(buffer), {
     headers: {

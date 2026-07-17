@@ -1,0 +1,20 @@
+{
+  "Navn er påkrævet": "Navn er påkrævet",
+  "Ugyldig email": "Ugyldig email",
+  "Adresse er påkrævet": "Adresse er påkrævet",
+  "Postnummer er påkrævet": "Postnummer er påkrævet",
+  "By er påkrævet": "By er påkrævet",
+  "Ugyldige oplysninger": "Ugyldige oplysninger",
+  "Virksomhedsnavn er påkrævet": "Virksomhedsnavn er påkrævet",
+  "CVR-nummer skal være 8 cifre": "CVR-nummer skal være 8 cifre",
+  "Adgangskode skal være mindst 8 tegn": "Adgangskode skal være mindst 8 tegn",
+  "Der findes allerede en konto med denne email": "Der findes allerede en konto med denne email",
+  "Bekræft din email, før du kan logge ind.": "Bekræft din email, før du kan logge ind.",
+  "Forkert email eller adgangskode.": "Forkert email eller adgangskode.",
+  "Vælg en kunde": "Vælg en kunde",
+  "Fakturadato er påkrævet": "Fakturadato er påkrævet",
+  "Forfaldsdato er påkrævet": "Forfaldsdato er påkrævet",
+  "Tilføj mindst én linje": "Tilføj mindst én linje",
+  "Ugyldig kunde": "Ugyldig kunde",
+  "Hvis kontoen findes og ikke allerede er bekræftet, har vi sendt en ny email.": "Hvis kontoen findes og ikke allerede er bekræftet, har vi sendt en ny email."
+}

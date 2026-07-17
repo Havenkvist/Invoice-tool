@@ -1,0 +1,20 @@
+{
+  "Navn er påkrævet": "Name is required",
+  "Ugyldig email": "Invalid email",
+  "Adresse er påkrævet": "Address is required",
+  "Postnummer er påkrævet": "Postal code is required",
+  "By er påkrævet": "City is required",
+  "Ugyldige oplysninger": "Invalid information",
+  "Virksomhedsnavn er påkrævet": "Company name is required",
+  "CVR-nummer skal være 8 cifre": "CVR number must be 8 digits",
+  "Adgangskode skal være mindst 8 tegn": "Password must be at least 8 characters",
+  "Der findes allerede en konto med denne email": "An account with this email already exists",
+  "Bekræft din email, før du kan logge ind.": "Verify your email before you can log in.",
+  "Forkert email eller adgangskode.": "Incorrect email or password.",
+  "Vælg en kunde": "Choose a client",
+  "Fakturadato er påkrævet": "Invoice date is required",
+  "Forfaldsdato er påkrævet": "Due date is required",
+  "Tilføj mindst én linje": "Add at least one line",
+  "Ugyldig kunde": "Invalid client",
+  "Hvis kontoen findes og ikke allerede er bekræftet, har vi sendt en ny email.": "If the account exists and hasn't already been verified, we've sent a new email."
+}

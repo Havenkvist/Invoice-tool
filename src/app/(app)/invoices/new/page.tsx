@@ -1,4 +1,5 @@
 import { DANISH_STANDARD_VAT_RATE } from "@/lib/constants";
+import { getTranslations } from "@/i18n/server";
 import { parseCustomFields } from "@/lib/custom-fields";
 import { defaultInvoiceDates } from "@/lib/dates";
 import { prisma } from "@/lib/prisma";
@@ -7,6 +8,7 @@ import InvoiceForm from "../invoice-form";
 
 export default async function NewInvoicePage() {
   const session = await requireSession();
+  const t = await getTranslations("default");
   const { issueDate, dueDate } = defaultInvoiceDates();
 
   const [clients, templates] = await Promise.all([
@@ -23,19 +25,19 @@ export default async function NewInvoicePage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-        Ny faktura
+        {t("Ny faktura")}
       </h1>
       {clients.length === 0 ? (
         <p className="text-sm text-zinc-500">
-          Opret en kunde, før du kan oprette en faktura.
+          {t("Opret en kunde, før du kan oprette en faktura.")}
         </p>
       ) : (
         <InvoiceForm
           clients={clients.map((c) => ({ id: c.id, name: c.name }))}
-          templates={templates.map((t) => ({
-            id: t.id,
-            name: t.name,
-            fields: parseCustomFields(t.fields),
+          templates={templates.map((tpl) => ({
+            id: tpl.id,
+            name: tpl.name,
+            fields: parseCustomFields(tpl.fields),
           }))}
           defaultVatRate={DANISH_STANDARD_VAT_RATE}
           defaultIssueDate={issueDate}

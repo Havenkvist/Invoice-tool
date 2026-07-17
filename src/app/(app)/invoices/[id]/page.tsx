@@ -1,16 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { toIntlLocale } from "@/i18n/config";
+import { getLocale, getTranslations } from "@/i18n/server";
 import { parseCustomFields } from "@/lib/custom-fields";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 import { issueInvoiceAction } from "../actions";
-
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Kladde",
-  SENT: "Sendt",
-  PAID: "Betalt",
-  OVERDUE: "Forfalden",
-};
 
 export default async function InvoiceDetailPage({
   params,
@@ -19,6 +14,15 @@ export default async function InvoiceDetailPage({
 }) {
   const { id } = await params;
   const session = await requireSession();
+  const [t, locale] = await Promise.all([getTranslations("default"), getLocale()]);
+  const intl = toIntlLocale(locale);
+
+  const STATUS_LABELS: Record<string, string> = {
+    DRAFT: t("Kladde"),
+    SENT: t("Sendt"),
+    PAID: t("Betalt"),
+    OVERDUE: t("Forfalden"),
+  };
 
   const invoice = await prisma.invoice.findFirst({
     where: { id, organizationId: session.user.organizationId },
@@ -35,7 +39,9 @@ export default async function InvoiceDetailPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            {invoice.number ? `Faktura #${invoice.number}` : "Kladde"}
+            {invoice.number
+              ? t("Faktura #%{number}", { number: invoice.number })
+              : t("Kladde")}
           </h1>
           <p className="text-sm text-zinc-500">
             {STATUS_LABELS[invoice.status]} — {invoice.client.name}
@@ -48,7 +54,7 @@ export default async function InvoiceDetailPage({
                 type="submit"
                 className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900"
               >
-                Send faktura
+                {t("Send faktura")}
               </button>
             </form>
           )}
@@ -58,7 +64,7 @@ export default async function InvoiceDetailPage({
               target="_blank"
               className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
             >
-              Download PDF
+              {t("Download PDF")}
             </Link>
           )}
         </div>
@@ -68,7 +74,7 @@ export default async function InvoiceDetailPage({
         <dl className="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md border border-zinc-200 px-4 py-3 text-sm dark:border-zinc-800">
           {customFields.map((field, index) => (
             <div key={index} className="flex gap-2">
-              <dt className="text-zinc-500">{field.label}:</dt>
+              <dt className="text-zinc-500">{t(field.label)}:</dt>
               <dd className="text-zinc-900 dark:text-zinc-50">{field.value}</dd>
             </div>
           ))}
@@ -79,10 +85,10 @@ export default async function InvoiceDetailPage({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-zinc-200 text-left text-zinc-500 dark:border-zinc-800">
-              <th className="px-4 py-2 font-medium">Beskrivelse</th>
-              <th className="px-4 py-2 font-medium">Antal</th>
-              <th className="px-4 py-2 font-medium">Pris</th>
-              <th className="px-4 py-2 text-right font-medium">I alt</th>
+              <th className="px-4 py-2 font-medium">{t("Beskrivelse")}</th>
+              <th className="px-4 py-2 font-medium">{t("Antal")}</th>
+              <th className="px-4 py-2 font-medium">{t("Pris")}</th>
+              <th className="px-4 py-2 text-right font-medium">{t("I alt")}</th>
             </tr>
           </thead>
           <tbody>
@@ -91,11 +97,11 @@ export default async function InvoiceDetailPage({
                 <td className="px-4 py-2">{item.description}</td>
                 <td className="px-4 py-2">{Number(item.quantity)}</td>
                 <td className="px-4 py-2">
-                  {Number(item.unitPrice).toLocaleString("da-DK")} kr.
+                  {Number(item.unitPrice).toLocaleString(intl)} kr.
                 </td>
                 <td className="px-4 py-2 text-right">
                   {(Number(item.quantity) * Number(item.unitPrice)).toLocaleString(
-                    "da-DK",
+                    intl,
                   )}{" "}
                   kr.
                 </td>
@@ -105,14 +111,14 @@ export default async function InvoiceDetailPage({
         </table>
         <div className="flex flex-col items-end gap-1 px-4 py-3 text-sm">
           <p className="text-zinc-500">
-            Subtotal: {Number(invoice.subtotalAmount).toLocaleString("da-DK")} kr.
+            {t("Subtotal")}: {Number(invoice.subtotalAmount).toLocaleString(intl)} kr.
           </p>
           <p className="text-zinc-500">
-            Moms ({(Number(invoice.vatRate) * 100).toFixed(0)}%):{" "}
-            {Number(invoice.vatAmount).toLocaleString("da-DK")} kr.
+            {t("Moms")} ({(Number(invoice.vatRate) * 100).toFixed(0)}%):{" "}
+            {Number(invoice.vatAmount).toLocaleString(intl)} kr.
           </p>
           <p className="font-semibold text-zinc-900 dark:text-zinc-50">
-            Total: {Number(invoice.totalAmount).toLocaleString("da-DK")} kr.
+            {t("Total")}: {Number(invoice.totalAmount).toLocaleString(intl)} kr.
           </p>
         </div>
       </div>

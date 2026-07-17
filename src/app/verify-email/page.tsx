@@ -1,3 +1,4 @@
+import { getTranslations } from "@/i18n/server";
 import ConfirmForm from "./confirm-form";
 
 export default async function VerifyEmailPage({
@@ -6,6 +7,7 @@ export default async function VerifyEmailPage({
   searchParams: Promise<{ token?: string }>;
 }) {
   const { token } = await searchParams;
+  const t = await getTranslations("default");
 
   return (
     <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 dark:bg-black">
@@ -14,7 +16,7 @@ export default async function VerifyEmailPage({
           <ConfirmForm token={token} />
         ) : (
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Manglende bekræftelseslink.
+            {t("Manglende bekræftelseslink.")}
           </p>
         )}
       </div>

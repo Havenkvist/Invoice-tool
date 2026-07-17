@@ -1,9 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "@/i18n/client";
 import { createClientAction } from "./actions";
 
 export default function ClientForm() {
+  const t = useTranslations();
   const [error, formAction, pending] = useActionState(
     createClientAction,
     undefined,
@@ -11,14 +13,17 @@ export default function ClientForm() {
 
   return (
     <form action={formAction} className="flex max-w-lg flex-col gap-4">
-      <Field label="Navn" name="name" required />
-      <Field label="Email" name="email" type="email" required />
-      <Field label="CVR-nummer (valgfri, tom for privatperson)" name="cvrNumber" />
-      <Field label="Adresse" name="addressLine1" required />
-      <Field label="Adresse linje 2" name="addressLine2" />
+      <Field label={t("Navn")} name="name" required />
+      <Field label={t("Email")} name="email" type="email" required />
+      <Field
+        label={t("CVR-nummer (valgfri, tom for privatperson)")}
+        name="cvrNumber"
+      />
+      <Field label={t("Adresse")} name="addressLine1" required />
+      <Field label={t("Adresse linje 2")} name="addressLine2" />
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Postnummer" name="postalCode" required />
-        <Field label="By" name="city" required />
+        <Field label={t("Postnummer")} name="postalCode" required />
+        <Field label={t("By")} name="city" required />
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
@@ -28,7 +33,7 @@ export default function ClientForm() {
         disabled={pending}
         className="mt-2 w-fit rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60 dark:bg-zinc-50 dark:text-zinc-900"
       >
-        {pending ? "Gemmer…" : "Opret kunde"}
+        {pending ? t("Gemmer…") : t("Opret kunde")}
       </button>
     </form>
   );

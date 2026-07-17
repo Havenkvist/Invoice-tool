@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import CustomFieldsEditor from "@/components/custom-fields-editor";
+import { useTranslations } from "@/i18n/client";
 import type { CustomField } from "@/lib/custom-fields";
 import { createInvoiceAction } from "./actions";
 
@@ -25,6 +26,7 @@ export default function InvoiceForm({
   defaultIssueDate: string;
   defaultDueDate: string;
 }) {
+  const t = useTranslations();
   const [error, formAction, pending] = useActionState(
     createInvoiceAction,
     undefined,
@@ -39,7 +41,7 @@ export default function InvoiceForm({
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
           <label htmlFor="clientId" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Kunde
+            {t("Kunde")}
           </label>
           <select
             id="clientId"
@@ -57,7 +59,7 @@ export default function InvoiceForm({
 
         <div className="flex flex-col gap-1">
           <label htmlFor="templateId" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Skabelon (valgfri)
+            {t("Skabelon (valgfri)")}
           </label>
           <select
             id="templateId"
@@ -66,7 +68,7 @@ export default function InvoiceForm({
             onChange={(e) => setSelectedTemplateId(e.target.value)}
             className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
           >
-            <option value="">Ingen</option>
+            <option value="">{t("Ingen")}</option>
             {templates.map((template) => (
               <option key={template.id} value={template.id}>
                 {template.name}
@@ -77,7 +79,7 @@ export default function InvoiceForm({
 
         <div className="flex flex-col gap-1">
           <label htmlFor="issueDate" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Fakturadato
+            {t("Fakturadato")}
           </label>
           <input
             id="issueDate"
@@ -91,7 +93,7 @@ export default function InvoiceForm({
 
         <div className="flex flex-col gap-1">
           <label htmlFor="dueDate" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Forfaldsdato
+            {t("Forfaldsdato")}
           </label>
           <input
             id="dueDate"
@@ -105,7 +107,7 @@ export default function InvoiceForm({
 
         <div className="flex flex-col gap-1">
           <label htmlFor="vatRate" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Momssats
+            {t("Momssats")}
           </label>
           <input
             id="vatRate"
@@ -123,14 +125,14 @@ export default function InvoiceForm({
 
       <div className="flex flex-col gap-2">
         <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Linjer
+          {t("Linjer")}
         </p>
         <div className="flex flex-col gap-2">
           {rows.map((row, index) => (
             <div key={row.key} className="grid grid-cols-[1fr_5rem_7rem_2rem] gap-2">
               <input
                 name="description"
-                placeholder="Beskrivelse"
+                placeholder={t("Beskrivelse")}
                 defaultValue={row.description}
                 required
                 className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
@@ -139,7 +141,7 @@ export default function InvoiceForm({
                 name="quantity"
                 type="number"
                 step="0.01"
-                placeholder="Antal"
+                placeholder={t("Antal")}
                 defaultValue={row.quantity}
                 required
                 className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
@@ -148,7 +150,7 @@ export default function InvoiceForm({
                 name="unitPrice"
                 type="number"
                 step="0.01"
-                placeholder="Pris"
+                placeholder={t("Pris")}
                 defaultValue={row.unitPrice}
                 required
                 className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
@@ -158,7 +160,7 @@ export default function InvoiceForm({
                 onClick={() => setRows((r) => r.filter((_, i) => i !== index))}
                 disabled={rows.length === 1}
                 className="text-sm text-zinc-400 hover:text-red-600 disabled:opacity-30"
-                aria-label="Fjern linje"
+                aria-label={t("Fjern linje")}
               >
                 ✕
               </button>
@@ -170,7 +172,7 @@ export default function InvoiceForm({
           onClick={() => setRows((r) => [...r, emptyRow()])}
           className="w-fit text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
         >
-          + Tilføj linje
+          {t("+ Tilføj linje")}
         </button>
       </div>
 
@@ -183,7 +185,7 @@ export default function InvoiceForm({
         disabled={pending}
         className="w-fit rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60 dark:bg-zinc-50 dark:text-zinc-900"
       >
-        {pending ? "Gemmer…" : "Opret kladde"}
+        {pending ? t("Gemmer…") : t("Opret kladde")}
       </button>
     </form>
   );

@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { useTranslations } from "@/i18n/client";
 import { loginAction } from "./actions";
 
 export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
+  const t = useTranslations();
   const [state, formAction, pending] = useActionState(loginAction, undefined);
 
   return (
@@ -13,7 +15,7 @@ export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
 
       <div className="flex flex-col gap-1">
         <label htmlFor="email" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Email
+          {t("Email")}
         </label>
         <input
           id="email"
@@ -27,7 +29,7 @@ export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
 
       <div className="flex flex-col gap-1">
         <label htmlFor="password" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Adgangskode
+          {t("Adgangskode")}
         </label>
         <input
           id="password"
@@ -49,7 +51,7 @@ export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
                 href={`/signup/check-email?email=${encodeURIComponent(state.unverifiedEmail)}`}
                 className="underline"
               >
-                Send bekræftelseslink igen
+                {t("Send bekræftelseslink igen")}
               </Link>
             </>
           )}
@@ -61,7 +63,7 @@ export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
         disabled={pending}
         className="mt-2 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60 dark:bg-zinc-50 dark:text-zinc-900"
       >
-        {pending ? "Logger ind…" : "Log ind"}
+        {pending ? t("Logger ind…") : t("Log ind")}
       </button>
     </form>
   );

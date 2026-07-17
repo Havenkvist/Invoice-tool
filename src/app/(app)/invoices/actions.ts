@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getTranslations } from "@/i18n/server";
 import { customFieldsFromFormEntries } from "@/lib/custom-fields";
 import { calculateInvoiceTotals } from "@/lib/invoice-calc";
 import { issueInvoice } from "@/lib/invoice-number";
@@ -15,19 +16,20 @@ const lineItemSchema = z.object({
   unitPrice: z.coerce.number().nonnegative(),
 });
 
-const invoiceSchema = z.object({
-  clientId: z.string().min(1, "Vælg en kunde"),
-  templateId: z.string().optional(),
-  issueDate: z.string().min(1, "Fakturadato er påkrævet"),
-  dueDate: z.string().min(1, "Forfaldsdato er påkrævet"),
-  vatRate: z.coerce.number().min(0).max(1),
-});
-
 export async function createInvoiceAction(
   _prevState: string | undefined,
   formData: FormData,
 ): Promise<string | undefined> {
   const session = await requireSession();
+  const t = await getTranslations("errors");
+
+  const invoiceSchema = z.object({
+    clientId: z.string().min(1, t("Vælg en kunde")),
+    templateId: z.string().optional(),
+    issueDate: z.string().min(1, t("Fakturadato er påkrævet")),
+    dueDate: z.string().min(1, t("Forfaldsdato er påkrævet")),
+    vatRate: z.coerce.number().min(0).max(1),
+  });
 
   const parsed = invoiceSchema.safeParse({
     clientId: formData.get("clientId"),
@@ -38,7 +40,7 @@ export async function createInvoiceAction(
   });
 
   if (!parsed.success) {
-    return parsed.error.issues[0]?.message ?? "Ugyldige oplysninger";
+    return parsed.error.issues[0]?.message ?? t("Ugyldige oplysninger");
   }
 
   const descriptions = formData.getAll("description");
@@ -56,14 +58,14 @@ export async function createInvoiceAction(
     .map((result) => result.data);
 
   if (lineItems.length === 0) {
-    return "Tilføj mindst én linje";
+    return t("Tilføj mindst én linje");
   }
 
   const client = await prisma.client.findFirst({
     where: { id: parsed.data.clientId, organizationId: session.user.organizationId },
   });
   if (!client) {
-    return "Ugyldig kunde";
+    return t("Ugyldig kunde");
   }
 
   const totals = calculateInvoiceTotals(lineItems, parsed.data.vatRate);

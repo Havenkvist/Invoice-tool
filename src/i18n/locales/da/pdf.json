@@ -1,0 +1,16 @@
+{
+  "Faktura #%{number}": "Faktura #%{number}",
+  "Kladde": "Kladde",
+  "CVR %{number}": "CVR %{number}",
+  "Fra": "Fra",
+  "Til": "Til",
+  "Fakturadato": "Fakturadato",
+  "Forfaldsdato": "Forfaldsdato",
+  "Beskrivelse": "Beskrivelse",
+  "Antal": "Antal",
+  "Pris": "Pris",
+  "I alt": "I alt",
+  "Subtotal": "Subtotal",
+  "Moms (%{rate}%)": "Moms (%{rate}%)",
+  "Total": "Total"
+}

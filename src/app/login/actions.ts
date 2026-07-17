@@ -2,6 +2,7 @@
 
 import { AuthError } from "next-auth";
 import { EmailNotVerifiedError, signIn } from "@/auth";
+import { getTranslations } from "@/i18n/server";
 
 export type LoginState = {
   message: string;
@@ -15,6 +16,7 @@ export async function loginAction(
   const email = formData.get("email");
   const password = formData.get("password");
   const callbackUrl = formData.get("callbackUrl");
+  const t = await getTranslations("errors");
 
   try {
     await signIn("credentials", {
@@ -25,12 +27,12 @@ export async function loginAction(
   } catch (error) {
     if (error instanceof EmailNotVerifiedError) {
       return {
-        message: "Bekræft din email, før du kan logge ind.",
+        message: t("Bekræft din email, før du kan logge ind."),
         unverifiedEmail: typeof email === "string" ? email : undefined,
       };
     }
     if (error instanceof AuthError) {
-      return { message: "Forkert email eller adgangskode." };
+      return { message: t("Forkert email eller adgangskode.") };
     }
     throw error;
   }

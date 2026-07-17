@@ -1,13 +1,8 @@
 import Link from "next/link";
+import LocaleSwitcher from "@/components/locale-switcher";
+import { getTranslations } from "@/i18n/server";
 import { requireSession } from "@/lib/session";
 import LogoutButton from "./logout-button";
-
-const NAV_LINKS = [
-  { href: "/dashboard", label: "Oversigt" },
-  { href: "/clients", label: "Kunder" },
-  { href: "/templates", label: "Skabeloner" },
-  { href: "/invoices", label: "Fakturaer" },
-];
 
 export default async function AppLayout({
   children,
@@ -15,6 +10,14 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const session = await requireSession();
+  const t = await getTranslations("default");
+
+  const NAV_LINKS = [
+    { href: "/dashboard", label: t("Oversigt") },
+    { href: "/clients", label: t("Kunder") },
+    { href: "/templates", label: t("Skabeloner") },
+    { href: "/invoices", label: t("Fakturaer") },
+  ];
 
   return (
     <div className="flex flex-1 flex-col">
@@ -37,6 +40,7 @@ export default async function AppLayout({
             </nav>
           </div>
           <div className="flex items-center gap-4">
+            <LocaleSwitcher />
             <span className="text-sm text-zinc-500">{session.user.email}</span>
             <LogoutButton />
           </div>

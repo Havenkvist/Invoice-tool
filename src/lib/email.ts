@@ -1,4 +1,6 @@
 import { Resend } from "resend";
+import { DEFAULT_LOCALE, type Locale } from "@/i18n/config";
+import { translate } from "@/i18n/dictionaries";
 
 const globalForResend = globalThis as unknown as { resend: Resend | undefined };
 
@@ -28,15 +30,20 @@ export async function sendVerificationEmail(params: {
   to: string;
   name: string;
   verifyUrl: string;
+  locale?: Locale;
 }) {
+  const locale = params.locale ?? DEFAULT_LOCALE;
+  const t = (key: string, values?: Record<string, string | number>) =>
+    translate(locale, "email", key, values);
+
   return sendEmail({
     to: params.to,
-    subject: "Bekræft din email",
+    subject: t("Bekræft din email"),
     html: `
-      <p>Hej ${params.name},</p>
-      <p>Tak for din oprettelse. Bekræft din email for at aktivere din konto:</p>
-      <p><a href="${params.verifyUrl}">Bekræft email</a></p>
-      <p>Linket udløber om 24 timer. Hvis du ikke har oprettet en konto, kan du ignorere denne email.</p>
+      <p>${t("Hej %{name},", { name: params.name })}</p>
+      <p>${t("Tak for din oprettelse. Bekræft din email for at aktivere din konto:")}</p>
+      <p><a href="${params.verifyUrl}">${t("Bekræft email")}</a></p>
+      <p>${t("Linket udløber om 24 timer. Hvis du ikke har oprettet en konto, kan du ignorere denne email.")}</p>
     `,
   });
 }

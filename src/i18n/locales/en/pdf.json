@@ -1,0 +1,16 @@
+{
+  "Faktura #%{number}": "Invoice #%{number}",
+  "Kladde": "Draft",
+  "CVR %{number}": "CVR %{number}",
+  "Fra": "From",
+  "Til": "To",
+  "Fakturadato": "Invoice date",
+  "Forfaldsdato": "Due date",
+  "Beskrivelse": "Description",
+  "Antal": "Quantity",
+  "Pris": "Price",
+  "I alt": "Total",
+  "Subtotal": "Subtotal",
+  "Moms (%{rate}%)": "VAT (%{rate}%)",
+  "Total": "Total"
+}

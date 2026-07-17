@@ -1,4 +1,6 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { toIntlLocale, type Locale } from "@/i18n/config";
+import { translate } from "@/i18n/dictionaries";
 
 export type InvoicePdfData = {
   number: number | null;
@@ -70,22 +72,36 @@ const styles = StyleSheet.create({
   grandTotalText: { fontWeight: 700 },
 });
 
-export function InvoicePdfDocument({ invoice }: { invoice: InvoicePdfData }) {
+export function InvoicePdfDocument({
+  invoice,
+  locale,
+}: {
+  invoice: InvoicePdfData;
+  locale: Locale;
+}) {
+  const t = (key: string, params?: Record<string, string | number>) =>
+    translate(locale, "pdf", key, params);
+  const intl = toIntlLocale(locale);
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.title}>
-              {invoice.number ? `Faktura #${invoice.number}` : "Kladde"}
+              {invoice.number
+                ? t("Faktura #%{number}", { number: invoice.number })
+                : t("Kladde")}
             </Text>
-            <Text style={styles.muted}>CVR {invoice.organization.cvrNumber}</Text>
+            <Text style={styles.muted}>
+              {t("CVR %{number}", { number: invoice.organization.cvrNumber })}
+            </Text>
           </View>
         </View>
 
         <View style={styles.partiesRow}>
           <View style={styles.partyColumn}>
-            <Text style={styles.partyLabel}>Fra</Text>
+            <Text style={styles.partyLabel}>{t("Fra")}</Text>
             <Text>{invoice.organization.name}</Text>
             <Text style={styles.addressBlock}>{invoice.organization.addressLine1}</Text>
             {invoice.organization.addressLine2 && (
@@ -97,9 +113,11 @@ export function InvoicePdfDocument({ invoice }: { invoice: InvoicePdfData }) {
             <Text>{invoice.organization.country}</Text>
           </View>
           <View style={styles.partyColumn}>
-            <Text style={styles.partyLabel}>Til</Text>
+            <Text style={styles.partyLabel}>{t("Til")}</Text>
             <Text>{invoice.client.name}</Text>
-            {invoice.client.cvrNumber && <Text>CVR {invoice.client.cvrNumber}</Text>}
+            {invoice.client.cvrNumber && (
+              <Text>{t("CVR %{number}", { number: invoice.client.cvrNumber })}</Text>
+            )}
             <Text style={styles.addressBlock}>{invoice.client.addressLine1}</Text>
             {invoice.client.addressLine2 && (
               <Text style={styles.addressBlock}>{invoice.client.addressLine2}</Text>
@@ -112,15 +130,19 @@ export function InvoicePdfDocument({ invoice }: { invoice: InvoicePdfData }) {
         </View>
 
         <View style={styles.metaRow}>
-          <Text>Fakturadato: {invoice.issueDate}</Text>
-          <Text>Forfaldsdato: {invoice.dueDate}</Text>
+          <Text>
+            {t("Fakturadato")}: {invoice.issueDate}
+          </Text>
+          <Text>
+            {t("Forfaldsdato")}: {invoice.dueDate}
+          </Text>
         </View>
 
         {invoice.customFields.length > 0 && (
           <View style={styles.customFieldsBlock}>
             {invoice.customFields.map((field, index) => (
               <View style={styles.customFieldRow} key={index}>
-                <Text style={styles.customFieldLabel}>{field.label}</Text>
+                <Text style={styles.customFieldLabel}>{t(field.label)}</Text>
                 <Text>{field.value}</Text>
               </View>
             ))}
@@ -129,20 +151,20 @@ export function InvoicePdfDocument({ invoice }: { invoice: InvoicePdfData }) {
 
         <View style={styles.table}>
           <View style={styles.tableHeaderRow}>
-            <Text style={styles.colDescription}>Beskrivelse</Text>
-            <Text style={styles.colQuantity}>Antal</Text>
-            <Text style={styles.colUnitPrice}>Pris</Text>
-            <Text style={styles.colTotal}>I alt</Text>
+            <Text style={styles.colDescription}>{t("Beskrivelse")}</Text>
+            <Text style={styles.colQuantity}>{t("Antal")}</Text>
+            <Text style={styles.colUnitPrice}>{t("Pris")}</Text>
+            <Text style={styles.colTotal}>{t("I alt")}</Text>
           </View>
           {invoice.lineItems.map((item, index) => (
             <View style={styles.tableRow} key={index}>
               <Text style={styles.colDescription}>{item.description}</Text>
               <Text style={styles.colQuantity}>{item.quantity}</Text>
               <Text style={styles.colUnitPrice}>
-                {item.unitPrice.toLocaleString("da-DK")} {invoice.currency}
+                {item.unitPrice.toLocaleString(intl)} {invoice.currency}
               </Text>
               <Text style={styles.colTotal}>
-                {(item.quantity * item.unitPrice).toLocaleString("da-DK")}{" "}
+                {(item.quantity * item.unitPrice).toLocaleString(intl)}{" "}
                 {invoice.currency}
               </Text>
             </View>
@@ -151,21 +173,23 @@ export function InvoicePdfDocument({ invoice }: { invoice: InvoicePdfData }) {
 
         <View style={styles.totalsBlock}>
           <View style={styles.totalsRow}>
-            <Text style={styles.muted}>Subtotal</Text>
+            <Text style={styles.muted}>{t("Subtotal")}</Text>
             <Text>
-              {invoice.subtotalAmount.toLocaleString("da-DK")} {invoice.currency}
+              {invoice.subtotalAmount.toLocaleString(intl)} {invoice.currency}
             </Text>
           </View>
           <View style={styles.totalsRow}>
-            <Text style={styles.muted}>Moms ({(invoice.vatRate * 100).toFixed(0)}%)</Text>
+            <Text style={styles.muted}>
+              {t("Moms (%{rate}%)", { rate: (invoice.vatRate * 100).toFixed(0) })}
+            </Text>
             <Text>
-              {invoice.vatAmount.toLocaleString("da-DK")} {invoice.currency}
+              {invoice.vatAmount.toLocaleString(intl)} {invoice.currency}
             </Text>
           </View>
           <View style={styles.grandTotalRow}>
-            <Text style={styles.grandTotalText}>Total</Text>
+            <Text style={styles.grandTotalText}>{t("Total")}</Text>
             <Text style={styles.grandTotalText}>
-              {invoice.totalAmount.toLocaleString("da-DK")} {invoice.currency}
+              {invoice.totalAmount.toLocaleString(intl)} {invoice.currency}
             </Text>
           </View>
         </View>

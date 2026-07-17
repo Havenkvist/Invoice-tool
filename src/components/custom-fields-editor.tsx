@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "@/i18n/client";
 import {
   CUSTOM_FIELD_CUSTOM_OPTION,
   CUSTOM_FIELD_PRESET_LABELS,
@@ -22,6 +23,7 @@ function rowFromField(field: CustomField): FieldRow {
 }
 
 export default function CustomFieldsEditor({ initialFields = [] }: { initialFields?: CustomField[] }) {
+  const t = useTranslations();
   const [rows, setRows] = useState<FieldRow[]>(() => initialFields.map(rowFromField));
 
   function updateRow(key: number, patch: Partial<FieldRow>) {
@@ -31,7 +33,7 @@ export default function CustomFieldsEditor({ initialFields = [] }: { initialFiel
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-        Andre felter (valgfri)
+        {t("Andre felter (valgfri)")}
       </p>
       <div className="flex flex-col gap-2">
         {rows.map((row) => (
@@ -43,15 +45,15 @@ export default function CustomFieldsEditor({ initialFields = [] }: { initialFiel
             >
               {CUSTOM_FIELD_PRESET_LABELS.map((label) => (
                 <option key={label} value={label}>
-                  {label}
+                  {t(label)}
                 </option>
               ))}
-              <option value={CUSTOM_FIELD_CUSTOM_OPTION}>{CUSTOM_FIELD_CUSTOM_OPTION}</option>
+              <option value={CUSTOM_FIELD_CUSTOM_OPTION}>{t(CUSTOM_FIELD_CUSTOM_OPTION)}</option>
             </select>
 
             {row.preset === CUSTOM_FIELD_CUSTOM_OPTION && (
               <input
-                placeholder="Feltnavn"
+                placeholder={t("Feltnavn")}
                 value={row.customLabel}
                 onChange={(e) => updateRow(row.key, { customLabel: e.target.value })}
                 className="w-40 shrink-0 rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
@@ -66,7 +68,7 @@ export default function CustomFieldsEditor({ initialFields = [] }: { initialFiel
 
             <input
               name="customFieldValue"
-              placeholder="Værdi"
+              placeholder={t("Værdi")}
               value={row.value}
               onChange={(e) => updateRow(row.key, { value: e.target.value })}
               className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
@@ -76,7 +78,7 @@ export default function CustomFieldsEditor({ initialFields = [] }: { initialFiel
               type="button"
               onClick={() => setRows((r) => r.filter((x) => x.key !== row.key))}
               className="px-2 py-2 text-sm text-zinc-400 hover:text-red-600"
-              aria-label="Fjern felt"
+              aria-label={t("Fjern felt")}
             >
               ✕
             </button>
@@ -93,7 +95,7 @@ export default function CustomFieldsEditor({ initialFields = [] }: { initialFiel
         }
         className="w-fit text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
       >
-        + Tilføj felt
+        {t("+ Tilføj felt")}
       </button>
     </div>
   );
