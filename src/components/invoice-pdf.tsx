@@ -15,6 +15,7 @@ export type InvoicePdfData = {
   vatAmount: number;
   totalAmount: number;
   currency: string;
+  customFields: { label: string; value: string }[];
   organization: {
     name: string;
     cvrNumber: string;
@@ -45,7 +46,10 @@ const styles = StyleSheet.create({
   partiesRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 32 },
   partyColumn: { width: "45%" },
   partyLabel: { fontSize: 9, color: "#71717a", marginBottom: 4, textTransform: "uppercase" },
-  metaRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
+  metaRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
+  customFieldsBlock: { marginBottom: 24 },
+  customFieldRow: { flexDirection: "row", marginBottom: 2 },
+  customFieldLabel: { width: 140, color: "#71717a" },
   table: { borderTopWidth: 1, borderTopColor: "#e4e4e7" },
   tableHeaderRow: {
     flexDirection: "row",
@@ -117,6 +121,17 @@ export function InvoicePdfDocument({ invoice }: { invoice: InvoicePdfData }) {
           <Text>Fakturadato: {invoice.issueDate}</Text>
           <Text>Forfaldsdato: {invoice.dueDate}</Text>
         </View>
+
+        {invoice.customFields.length > 0 && (
+          <View style={styles.customFieldsBlock}>
+            {invoice.customFields.map((field, index) => (
+              <View style={styles.customFieldRow} key={index}>
+                <Text style={styles.customFieldLabel}>{field.label}</Text>
+                <Text>{field.value}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         <View style={styles.table}>
           <View style={styles.tableHeaderRow}>

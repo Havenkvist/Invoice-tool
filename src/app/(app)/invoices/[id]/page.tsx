@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { parseCustomFields } from "@/lib/custom-fields";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 import { issueInvoiceAction } from "../actions";
@@ -27,6 +28,7 @@ export default async function InvoiceDetailPage({
   if (!invoice) notFound();
 
   const issue = issueInvoiceAction.bind(null, invoice.id);
+  const customFields = parseCustomFields(invoice.customFields);
 
   return (
     <div className="flex flex-col gap-6">
@@ -61,6 +63,17 @@ export default async function InvoiceDetailPage({
           )}
         </div>
       </div>
+
+      {customFields.length > 0 && (
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-1 rounded-md border border-zinc-200 px-4 py-3 text-sm dark:border-zinc-800">
+          {customFields.map((field, index) => (
+            <div key={index} className="flex gap-2">
+              <dt className="text-zinc-500">{field.label}:</dt>
+              <dd className="text-zinc-900 dark:text-zinc-50">{field.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
 
       <div className="rounded-md border border-zinc-200 dark:border-zinc-800">
         <table className="w-full text-sm">

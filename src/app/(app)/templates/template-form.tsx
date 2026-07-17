@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import CustomFieldsEditor from "@/components/custom-fields-editor";
 import { createTemplateAction } from "./actions";
 
 export default function TemplateForm() {
@@ -24,22 +25,10 @@ export default function TemplateForm() {
         />
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="fields" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Tilpassede felter (JSON, valgfri)
-        </label>
-        <textarea
-          id="fields"
-          name="fields"
-          rows={6}
-          placeholder="{}"
-          className="rounded-md border border-zinc-300 px-3 py-2 font-mono text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
-        />
-        <p className="text-xs text-zinc-500">
-          Fri layout/indhold til fakturaen, f.eks. faste linjer eller noter.
-          Bruges aldrig til at generere bindende juridisk tekst.
-        </p>
-      </div>
+      <CustomFieldsEditor />
+      <p className="-mt-2 text-xs text-zinc-500">
+        Disse felter foreslås automatisk, når skabelonen vælges på en ny faktura.
+      </p>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

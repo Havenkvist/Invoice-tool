@@ -3,12 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { customFieldsFromFormEntries } from "@/lib/custom-fields";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 
 const templateSchema = z.object({
   name: z.string().min(1, "Navn er påkrævet"),
-  fields: z.string().optional(),
 });
 
 export async function createTemplateAction(
@@ -19,21 +19,16 @@ export async function createTemplateAction(
 
   const parsed = templateSchema.safeParse({
     name: formData.get("name"),
-    fields: formData.get("fields") || undefined,
   });
 
   if (!parsed.success) {
     return parsed.error.issues[0]?.message ?? "Ugyldige oplysninger";
   }
 
-  let fields: object = {};
-  if (parsed.data.fields?.trim()) {
-    try {
-      fields = JSON.parse(parsed.data.fields);
-    } catch {
-      return "Felter skal være gyldig JSON";
-    }
-  }
+  const fields = customFieldsFromFormEntries(
+    formData.getAll("customFieldLabel"),
+    formData.getAll("customFieldValue"),
+  );
 
   await prisma.invoiceTemplate.create({
     data: {

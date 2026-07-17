@@ -1,4 +1,5 @@
 import { DANISH_STANDARD_VAT_RATE } from "@/lib/constants";
+import { parseCustomFields } from "@/lib/custom-fields";
 import { defaultInvoiceDates } from "@/lib/dates";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
@@ -31,7 +32,11 @@ export default async function NewInvoicePage() {
       ) : (
         <InvoiceForm
           clients={clients.map((c) => ({ id: c.id, name: c.name }))}
-          templates={templates.map((t) => ({ id: t.id, name: t.name }))}
+          templates={templates.map((t) => ({
+            id: t.id,
+            name: t.name,
+            fields: parseCustomFields(t.fields),
+          }))}
           defaultVatRate={DANISH_STANDARD_VAT_RATE}
           defaultIssueDate={issueDate}
           defaultDueDate={dueDate}

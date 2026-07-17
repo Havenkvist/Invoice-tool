@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { customFieldsFromFormEntries } from "@/lib/custom-fields";
 import { calculateInvoiceTotals } from "@/lib/invoice-calc";
 import { issueInvoice } from "@/lib/invoice-number";
 import { prisma } from "@/lib/prisma";
@@ -67,6 +68,11 @@ export async function createInvoiceAction(
 
   const totals = calculateInvoiceTotals(lineItems, parsed.data.vatRate);
 
+  const customFields = customFieldsFromFormEntries(
+    formData.getAll("customFieldLabel"),
+    formData.getAll("customFieldValue"),
+  );
+
   const invoice = await prisma.invoice.create({
     data: {
       organizationId: session.user.organizationId,
@@ -78,6 +84,7 @@ export async function createInvoiceAction(
       subtotalAmount: totals.subtotalAmount,
       vatAmount: totals.vatAmount,
       totalAmount: totals.totalAmount,
+      customFields,
       lineItems: {
         create: lineItems.map((item, position) => ({
           description: item.description,

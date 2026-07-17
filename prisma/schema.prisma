@@ -132,10 +132,11 @@ model InvoiceTemplate {
 
   name String
 
-  /// Freeform, customer-defined template configuration (line item presets,
-  /// layout/branding choices, default notes, etc). Never used to generate
+  /// Ordered array of { label, value } pairs (see src/lib/custom-fields.ts)
+  /// that pre-fill Invoice.customFields when an invoice uses this template,
+  /// e.g. default payment terms or bank details. Never used to generate
   /// binding legal/licensing text — see NEVER_GENERATE_LEGAL_TEXT constant.
-  fields Json @default("{}")
+  fields Json @default("[]")
 
   invoices Invoice[]
 
@@ -190,9 +191,11 @@ model Invoice {
 
   status InvoiceStatus @default(DRAFT)
 
-  /// Flexible, per-invoice display/layout data (e.g. custom notes fields
-  /// defined by the template). Never legally mandated content.
-  customFields Json @default("{}")
+  /// Ordered array of { label, value } pairs (see src/lib/custom-fields.ts),
+  /// e.g. payment terms, a PO/reference number, bank details, or a discount
+  /// note. Initially copied from the template's `fields`, then editable per
+  /// invoice. Never legally mandated content.
+  customFields Json @default("[]")
 
   lineItems LineItem[]
   payments  Payment[]

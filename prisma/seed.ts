@@ -92,7 +92,10 @@ async function main() {
     data: {
       organizationId: studio.id,
       name: "Bryllupspakke",
-      fields: { defaultNote: "Tak fordi I valgte Nordlys Fotostudie til jeres store dag." },
+      fields: [
+        { label: "Betalingsbetingelser", value: "Netto 14 dage" },
+        { label: "Andet", value: "Tak fordi I valgte Nordlys Fotostudie til jeres store dag." },
+      ],
     },
   });
 

@@ -1,6 +1,7 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import { InvoicePdfDocument, type InvoicePdfData } from "@/components/invoice-pdf";
+import { parseCustomFields } from "@/lib/custom-fields";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 
@@ -33,6 +34,7 @@ export async function GET(
     vatAmount: Number(invoice.vatAmount),
     totalAmount: Number(invoice.totalAmount),
     currency: invoice.currency,
+    customFields: parseCustomFields(invoice.customFields),
     organization: {
       name: invoice.organization.name,
       cvrNumber: invoice.organization.cvrNumber,

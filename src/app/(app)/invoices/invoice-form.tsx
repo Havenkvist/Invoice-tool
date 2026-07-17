@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import CustomFieldsEditor from "@/components/custom-fields-editor";
+import type { CustomField } from "@/lib/custom-fields";
 import { createInvoiceAction } from "./actions";
 
 type LineItemRow = { key: number; description: string; quantity: string; unitPrice: string };
@@ -18,7 +20,7 @@ export default function InvoiceForm({
   defaultDueDate,
 }: {
   clients: { id: string; name: string }[];
-  templates: { id: string; name: string }[];
+  templates: { id: string; name: string; fields: CustomField[] }[];
   defaultVatRate: number;
   defaultIssueDate: string;
   defaultDueDate: string;
@@ -28,6 +30,9 @@ export default function InvoiceForm({
     undefined,
   );
   const [rows, setRows] = useState<LineItemRow[]>([emptyRow()]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState("");
+  const selectedTemplateFields =
+    templates.find((t) => t.id === selectedTemplateId)?.fields ?? [];
 
   return (
     <form action={formAction} className="flex max-w-2xl flex-col gap-6">
@@ -57,6 +62,8 @@ export default function InvoiceForm({
           <select
             id="templateId"
             name="templateId"
+            value={selectedTemplateId}
+            onChange={(e) => setSelectedTemplateId(e.target.value)}
             className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
           >
             <option value="">Ingen</option>
@@ -166,6 +173,8 @@ export default function InvoiceForm({
           + Tilføj linje
         </button>
       </div>
+
+      <CustomFieldsEditor key={selectedTemplateId} initialFields={selectedTemplateFields} />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
