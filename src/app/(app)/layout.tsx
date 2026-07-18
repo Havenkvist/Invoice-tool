@@ -1,9 +1,9 @@
-import Link from "next/link";
 import LocaleSwitcher from "@/components/locale-switcher";
 import ThemeToggle from "@/components/theme-toggle";
 import { getTranslations } from "@/i18n/server";
 import { requireSession } from "@/lib/session";
 import LogoutButton from "./logout-button";
+import NavLinks from "./nav-links";
 
 export default async function AppLayout({
   children,
@@ -28,17 +28,7 @@ export default async function AppLayout({
             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
               Faktura
             </span>
-            <nav className="flex items-center gap-6">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
+            <NavLinks links={NAV_LINKS} />
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
