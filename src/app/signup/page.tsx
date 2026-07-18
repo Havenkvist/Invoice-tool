@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LocaleSwitcher from "@/components/locale-switcher";
+import ThemeToggle from "@/components/theme-toggle";
 import { getTranslations } from "@/i18n/server";
 import SignupForm from "./signup-form";
 
@@ -7,7 +8,8 @@ export default async function SignupPage() {
   const t = await getTranslations("default");
   return (
     <div className="relative flex flex-1 items-center justify-center bg-zinc-50 px-4 py-10 dark:bg-black">
-      <div className="absolute right-4 top-4">
+      <div className="absolute right-4 top-4 flex items-center gap-4">
+        <ThemeToggle />
         <LocaleSwitcher />
       </div>
       <div className="w-full max-w-md rounded-lg border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">

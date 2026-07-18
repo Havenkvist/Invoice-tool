@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LocaleSwitcher from "@/components/locale-switcher";
+import ThemeToggle from "@/components/theme-toggle";
 import { getTranslations } from "@/i18n/server";
 import { requireSession } from "@/lib/session";
 import LogoutButton from "./logout-button";
@@ -40,6 +41,7 @@ export default async function AppLayout({
             </nav>
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <LocaleSwitcher />
             <span className="text-sm text-zinc-500">{session.user.email}</span>
             <LogoutButton />
