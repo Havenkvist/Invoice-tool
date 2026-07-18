@@ -84,3 +84,14 @@ export async function updateTemplateAction(
   revalidatePath("/templates");
   redirect("/templates");
 }
+
+export async function deleteTemplateAction(templateId: string): Promise<void> {
+  const session = await requireSession();
+
+  await prisma.invoiceTemplate.deleteMany({
+    where: { id: templateId, organizationId: session.user.organizationId },
+  });
+
+  revalidatePath("/templates");
+  redirect("/templates");
+}

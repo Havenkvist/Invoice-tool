@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "@/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
+import DeleteTemplateButton from "./delete-template-button";
 
 export default async function TemplatesPage() {
   const session = await requireSession();
@@ -31,10 +32,13 @@ export default async function TemplatesPage() {
       ) : (
         <ul className="divide-y divide-zinc-200 rounded-md border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
           {templates.map((template) => (
-            <li key={template.id}>
+            <li
+              key={template.id}
+              className="group flex items-center justify-between gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+            >
               <Link
                 href={`/templates/${template.id}`}
-                className="group flex items-center justify-between gap-4 px-4 py-3 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                className="flex flex-1 items-center justify-between gap-4 px-4 py-3 text-sm"
               >
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">
                   {template.name}
@@ -44,6 +48,9 @@ export default async function TemplatesPage() {
                   <span aria-hidden="true">›</span>
                 </span>
               </Link>
+              <div className="pr-4">
+                <DeleteTemplateButton templateId={template.id} />
+              </div>
             </li>
           ))}
         </ul>
