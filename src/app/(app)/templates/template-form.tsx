@@ -3,14 +3,19 @@
 import { useActionState } from "react";
 import CustomFieldsEditor from "@/components/custom-fields-editor";
 import { useTranslations } from "@/i18n/client";
-import { createTemplateAction } from "./actions";
+import type { CustomField } from "@/lib/custom-fields";
+import { createTemplateAction, updateTemplateAction } from "./actions";
 
-export default function TemplateForm() {
+type Template = {
+  id: string;
+  name: string;
+  fields: CustomField[];
+};
+
+export default function TemplateForm({ template }: { template?: Template }) {
   const t = useTranslations();
-  const [error, formAction, pending] = useActionState(
-    createTemplateAction,
-    undefined,
-  );
+  const action = template ? updateTemplateAction.bind(null, template.id) : createTemplateAction;
+  const [error, formAction, pending] = useActionState(action, undefined);
 
   return (
     <form action={formAction} className="flex max-w-lg flex-col gap-4">
@@ -22,12 +27,13 @@ export default function TemplateForm() {
           id="name"
           name="name"
           required
+          defaultValue={template?.name}
           placeholder={t('F.eks. "Bryllupspakke"')}
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
         />
       </div>
 
-      <CustomFieldsEditor />
+      <CustomFieldsEditor initialFields={template?.fields} />
       <p className="-mt-2 text-xs text-zinc-500">
         {t("Disse felter foreslås automatisk, når skabelonen vælges på en ny faktura.")}
       </p>
@@ -39,7 +45,11 @@ export default function TemplateForm() {
         disabled={pending}
         className="mt-2 w-fit rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60 dark:bg-zinc-50 dark:text-zinc-900"
       >
-        {pending ? t("Gemmer…") : t("Opret skabelon")}
+        {pending
+          ? t("Gemmer…")
+          : template
+            ? t("Gem ændringer")
+            : t("Opret skabelon")}
       </button>
     </form>
   );

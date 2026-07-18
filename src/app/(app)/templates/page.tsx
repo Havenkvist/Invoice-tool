@@ -31,10 +31,19 @@ export default async function TemplatesPage() {
       ) : (
         <ul className="divide-y divide-zinc-200 rounded-md border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
           {templates.map((template) => (
-            <li key={template.id} className="px-4 py-3 text-sm">
-              <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                {template.name}
-              </p>
+            <li key={template.id}>
+              <Link
+                href={`/templates/${template.id}`}
+                className="group flex items-center justify-between gap-4 px-4 py-3 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900"
+              >
+                <span className="font-medium text-zinc-900 dark:text-zinc-50">
+                  {template.name}
+                </span>
+                <span className="flex items-center gap-1 text-xs text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300">
+                  {t("Rediger")}
+                  <span aria-hidden="true">›</span>
+                </span>
+              </Link>
             </li>
           ))}
         </ul>

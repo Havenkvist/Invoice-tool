@@ -5,6 +5,7 @@
   "Postnummer er påkrævet": "Postal code is required",
   "By er påkrævet": "City is required",
   "Ugyldige oplysninger": "Invalid information",
+  "Skabelonen blev ikke fundet": "Template not found",
   "Virksomhedsnavn er påkrævet": "Company name is required",
   "CVR-nummer skal være 8 cifre": "CVR number must be 8 digits",
   "Adgangskode skal være mindst 8 tegn": "Password must be at least 8 characters",
