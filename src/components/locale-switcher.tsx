@@ -25,18 +25,18 @@ export default function LocaleSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-1 text-sm">
+    <div className="inline-flex items-center gap-0.5 rounded-full bg-zinc-100 p-0.5 text-sm dark:bg-zinc-800">
       {SUPPORTED_LOCALES.map((code) => (
         <button
           key={code}
           type="button"
           onClick={() => switchTo(code)}
           disabled={isPending}
-          aria-current={locale === code}
+          aria-pressed={locale === code}
           className={
             locale === code
-              ? "rounded px-1.5 py-0.5 font-medium text-zinc-900 dark:text-zinc-50"
-              : "rounded px-1.5 py-0.5 text-zinc-400 hover:text-zinc-700 disabled:opacity-60 dark:text-zinc-600 dark:hover:text-zinc-300"
+              ? "rounded-full bg-white px-2.5 py-1 font-medium text-zinc-900 shadow-sm dark:bg-zinc-950 dark:text-zinc-50"
+              : "rounded-full px-2.5 py-1 text-zinc-500 hover:text-zinc-700 disabled:opacity-60 dark:text-zinc-400 dark:hover:text-zinc-200"
           }
         >
           {LOCALE_LABELS[code]}

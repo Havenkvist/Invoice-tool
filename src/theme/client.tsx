@@ -15,6 +15,7 @@ function applyTheme(theme: Theme) {
 
 const ThemeContext = createContext<{
   theme: Theme;
+  resolvedTheme: "light" | "dark";
   setTheme: (theme: Theme) => void;
 } | null>(null);
 
@@ -26,11 +27,21 @@ export function ThemeProvider({
   children: React.ReactNode;
 }) {
   const [theme, setThemeState] = useState<Theme>(initialTheme);
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(
+    initialTheme === "system" ? "light" : initialTheme,
+  );
 
   useEffect(() => {
-    if (theme !== "system") return;
+    if (theme !== "system") {
+      setResolvedTheme(theme);
+      return;
+    }
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = () => applyTheme("system");
+    const handleChange = () => {
+      applyTheme("system");
+      setResolvedTheme(mediaQuery.matches ? "dark" : "light");
+    };
+    handleChange();
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [theme]);
@@ -41,7 +52,11 @@ export function ThemeProvider({
     document.cookie = `${THEME_COOKIE_NAME}=${next}; path=/; max-age=31536000; samesite=lax`;
   }
 
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {
